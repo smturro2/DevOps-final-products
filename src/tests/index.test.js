@@ -1,5 +1,4 @@
 const request = require('supertest');
-const express = require('express');
 const index = require('../index');
 
 describe('Express App', () => {

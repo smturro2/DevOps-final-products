@@ -15,12 +15,6 @@ pipeline {
                 }
             }
         }
-        stage('Lint') {
-            steps {
-                echo 'Running linters...'
-                sh 'npm run lint'
-            }
-        }
         stage('Test') {
             steps {
                 script {

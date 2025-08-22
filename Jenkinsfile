@@ -2,15 +2,17 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "your-docker-registry"
-        REPO = "git_product_serv"
+        DOCKER_REGISTRY = "your-docker-DOCKER_REGISTRY"
+        DOCKER_NAME = "devops-final-web"
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
     }
 
     stages {
         stage('Build') {
             steps {
-                echo 'Installing dependencies...'
-                sh 'npm install'
+                script {
+                    utils.buildAPI()
+                }
             }
         }
         stage('Lint') {
@@ -21,32 +23,47 @@ pipeline {
         }
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                sh 'npm test'
+                script {
+                    utils.testJavascript()
+                }
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Running security scan...'
-                sh 'npx snyk test'
+                script {
+                    utils.runStaticScan()
+                }
             }
         }
         stage('Container Build') {
             steps {
-                echo 'Building Docker Image...'
-                sh 'docker build -t ${REGISTRY}/${REPO}:${env.BUILD_NUMBER} .'
+                script {
+                    utils.buildDocker(
+                        DOCKER_REGISTRY, 
+                        DOCKER_NAME, 
+                        DOCKER_TAG
+                    )
+                }
             }
         }
         stage('Container Push') {
             steps {
-                echo 'Pushing Docker Image...'
-                sh 'docker push ${REGISTRY}/${REPO}:${env.BUILD_NUMBER}'
+                script {
+                    utils.pushDocker(
+                        DOCKER_REGISTRY, 
+                        DOCKER_NAME, 
+                        DOCKER_TAG
+                    )
+                }
             }
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying to Development Environment...'
-                // Implement deployment logic here
+                script {
+                    utils.conditionalDeployment(
+                        env.branchName
+                    )
+                }
             }
         }
     }

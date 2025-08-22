@@ -2,12 +2,26 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_REGISTRY = "your-docker-DOCKER_REGISTRY"
-        DOCKER_NAME = "devops-final-web"
-        DOCKER_TAG = "${env.BUILD_NUMBER}"
+        DOCKERHUB_CREDENTIALS = credentials("dockerhub")
+        DOCKER_REGISTRY = "denture8278"
+        DOCKER_NAME = "devops-final-products"
+        // DOCKER_TAG = "${env.BUILD_NUMBER}"  // todo
+        DOCKER_TAG = "v1.1"
     }
 
     stages {
+        // todo remove
+        stage('Debug') {
+            steps {
+                script {
+                    sh 'whoami'
+                    sh 'env'
+                    sh 'docker --version'
+                    sh 'docker ps'
+                    echo "Branch name is: ${env.BRANCH_NAME}"
+                }
+            }
+        }
         stage('Build') {
             steps {
                 script {
@@ -46,7 +60,9 @@ pipeline {
                     utils.pushDocker(
                         DOCKER_REGISTRY, 
                         DOCKER_NAME, 
-                        DOCKER_TAG
+                        DOCKER_TAG,
+                        DOCKERHUB_CREDENTIALS_USR,
+                        DOCKERHUB_CREDENTIALS_PSW,
                     )
                 }
             }
@@ -55,10 +71,16 @@ pipeline {
             steps {
                 script {
                     utils.conditionalDeployment(
-                        env.branchName
+                        env.BRANCH_NAME
                     )
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker logout'
         }
     }
 }

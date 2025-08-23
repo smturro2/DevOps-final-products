@@ -47,13 +47,6 @@ pipeline {
                 }
             }
         }
-        stage('Security Scan') {
-            steps {
-                script {
-                    utils.runStaticScan()
-                }
-            }
-        }
         stage('Container Build') {
             steps {
                 script {
@@ -62,6 +55,13 @@ pipeline {
                         DOCKER_NAME, 
                         DOCKER_TAG
                     )
+                }
+            }
+        }
+        stage('Security Scan') {
+            steps {
+                script {
+                    utils.runSecurityScan()
                 }
             }
         }

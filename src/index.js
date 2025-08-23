@@ -6,7 +6,7 @@ const index = express();
 index.use(cors());
 index.use(express.json());
 
-// Database connection
+// db connection
 const pool = new Pool({
     host: process.env.DB_HOST || 'db',
     database: process.env.DB_NAME || 'ecommerce',

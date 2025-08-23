@@ -26,13 +26,8 @@ pipeline {
         stage('Set Version') {
             steps {
                 script {
-                    // Get the first 7 characters of the Git commit hash
                     def commitHash = sh(script: 'git rev-parse --short=7 HEAD', returnStdout: true).trim()
-                    // Get the current branch name
-                    def branchName = env.BRANCH_NAME ?: sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-
-                    // Use branch name and commit hash to construct the docker tag
-                    env.DOCKER_TAG = "${branchName}-${commitHash}"
+                    env.DOCKER_TAG = "${commitHash}"
                     echo "Docker tag set to ${env.DOCKER_TAG}"
                 }
             }

@@ -61,7 +61,11 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
-                    utils.runSecurityScan()
+                    utils.runSecurityScan(
+                        DOCKER_REGISTRY, 
+                        DOCKER_NAME, 
+                        DOCKER_TAG
+                    )
                 }
             }
         }
